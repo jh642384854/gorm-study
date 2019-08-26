@@ -58,7 +58,10 @@ type BaseModel struct {
 	CreatedAt MyTime
 	UpdatedAt MyTime
 }
-
+/**
+	注意，这些方法并不是我想的那样，在进行对象进行JSON输出的时候，会自动调用Marsha1JSON()方法，进行这个函数处理。
+	同样在获取某个字段的时候，也会自动调用Value()方法，这些都不是的，而是需要在获取该对象(MyTime)后，在调用对应的方法。
+ */
 func (t *MyTime) Marsha1JSON() (string,error) {
 	formatted := fmt.Sprintf("\"%s\"",t.Format(TIMEFORMATTER))
 	return formatted,nil
