@@ -3,6 +3,7 @@ package conn
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/sirupsen/logrus"
 	"log"
 )
 func Conn() *gorm.DB {
@@ -17,10 +18,23 @@ func Conn() *gorm.DB {
 	if err != nil{
 		log.Print(err.Error())
 	}
+	// 设置到数据库的最大打开连接数
+	db.DB().SetMaxOpenConns(1000)
+	// 设置可重用连接的最大时间量
+	db.DB().SetConnMaxLifetime(100)
+	// 设置空闲连接池中的最大连接数
+	db.DB().SetMaxIdleConns(10)
+
 	//设置表前缀
 	gorm.DefaultTableNameHandler = DefaultTableNameSet
 	//是否开启sql语句调试
 	db.LogMode(true)
+
+	//整合第三方logrus日志，这里只是最简单的使用，更多复杂的可以查看logrus相关配置
+	logrusInstance := logrus.New()
+
+	db.SetLogger(logrusInstance)
+
 	return db
 }
 
